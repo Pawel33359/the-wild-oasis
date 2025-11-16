@@ -14,6 +14,12 @@ function BookingTableOperations() {
           { value: "unconfirmed", label: "Unconfirmed" },
         ]}
       />
+      {/* <Filter filterField="status">
+          <Filter.Button param="all">All</Filter.Button>
+          <Filter.Button param="checked-out">Checked out</Filter.Button>
+          <Filter.Button param="checked-in">Checked in</Filter.Button>
+          <Filter.Button param="unconfirmed">Unconfirmed</Filter.Button>
+      </Filter> */}
 
       <SortBy
         options={[
