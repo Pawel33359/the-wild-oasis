@@ -1,5 +1,9 @@
 import styled from "styled-components";
 import DashboardBox from "./DashboardBox";
+import Heading from './../../ui/Heading';
+import { Area, AreaChart, CartesianGrid, Tooltip, XAxis, YAxis, ResponsiveContainer } from "recharts";
+import { useDarkMode } from "../../context/DarkModeContext";
+import { eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
 
 const StyledSalesChart = styled(DashboardBox)`
   grid-column: 1 / -1;
@@ -57,3 +61,40 @@ const colors = isDarkMode
       text: "#374151",
       background: "#fff",
     };
+
+
+function SalesChart({bookings, numDays}) {
+  const {isDarkMode} = useDarkMode();
+
+  const allDates = eachDayOfInterval({
+    start: subDays(new Date(), numDays - 1),
+    end: subDays(new Date(), 0),
+  });
+
+
+  const data = allDates.map(date => {
+    return {
+      label: format(date, "MMM dd"),
+      totalSales: bookings.filter(booking=>isSameDay(date, new Date(booking.created_at))).reduce((sum, booking) => sum + booking.totalPrice, 0) || 0,
+      extrasSales: bookings.filter(booking=>isSameDay(date, new Date(booking.created_at))).reduce((sum, booking) => sum + booking.extrasPrice, 0) || 0
+    }
+  });
+
+  return (
+    <StyledSalesChart>
+      <Heading as="h2">Sales from {format(allDates[0], "MMM dd yyyy")} to {format(allDates[allDates.length - 1], "MMM dd yyyy")}</Heading>
+      <ResponsiveContainer height={300} width="100%">
+        <AreaChart data={data} >
+          <XAxis dataKey="label"  tick={{fill: colors.text}} tickLine={{stroke: colors.text}}/>
+          <YAxis unit="$" tick={{fill: colors.text}} tickLine={{stroke: colors.text}}/>
+          <CartesianGrid strokeDasharray="4" />
+          <Tooltip contentStyle={{backgroundColor: colors.background}}/>
+          <Area dataKey="totalSales" type="monotone" stroke={colors.totalSales.stroke} fill={colors.totalSales.fill} strokeWidth={2} name="Total Sales" unit="$"/>
+          <Area dataKey="extrasSales" type="monotone" stroke={colors.extrasSales.stroke} fill={colors.extrasSales.fill} strokeWidth={2} name="Extras Sales" unit="$"/>
+        </AreaChart>
+      </ResponsiveContainer>
+    </StyledSalesChart>
+  )
+}
+
+export default SalesChart
