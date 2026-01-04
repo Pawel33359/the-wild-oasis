@@ -1,37 +1,42 @@
 import { createContext, useContext, useEffect } from "react";
-import { useLocalStorageState } from './../hooks/useLocalStorageState';
+import { useLocalStorageState } from "./../hooks/useLocalStorageState";
 
 const DarkModeCotnext = createContext();
 
-function DarkModeProvider({children}){
-    const [isDarkMode, setIsDarkmode] = useLocalStorageState(false, "isDarkMode");
+function DarkModeProvider({ children }) {
+  const [isDarkMode, setIsDarkmode] = useLocalStorageState(
+    window.matchMedia("(prefers-color-scheme: dark)")?.matches || false,
+    "isDarkMode"
+  );
 
-    useEffect(()=>{
-        if(isDarkMode){
-            document.documentElement.classList.add("dark-mode");
-            document.documentElement.classList.remove("light-mode");
-        }else{
-            document.documentElement.classList.add("light-mode");
-            document.documentElement.classList.remove("dark-mode");
-        }
-    }, [isDarkMode]);
-
-
-    function toggleDarkMode (){
-        setIsDarkmode(isDark=>!isDark)
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark-mode");
+      document.documentElement.classList.remove("light-mode");
+    } else {
+      document.documentElement.classList.add("light-mode");
+      document.documentElement.classList.remove("dark-mode");
     }
+  }, [isDarkMode]);
 
+  function toggleDarkMode() {
+    setIsDarkmode((isDark) => !isDark);
+  }
 
-
-    return <DarkModeCotnext.Provider value={{isDarkMode, toggleDarkMode}}>{children}</DarkModeCotnext.Provider>
+  return (
+    <DarkModeCotnext.Provider value={{ isDarkMode, toggleDarkMode }}>
+      {children}
+    </DarkModeCotnext.Provider>
+  );
 }
 
-function useDarkMode(){
-    const context = useContext(DarkModeCotnext);
+function useDarkMode() {
+  const context = useContext(DarkModeCotnext);
 
-    if(context === undefined) throw new Error("DarkModeContext was used outside of DarkModeProvider");
+  if (context === undefined)
+    throw new Error("DarkModeContext was used outside of DarkModeProvider");
 
-    return context;
+  return context;
 }
 
-export {DarkModeProvider, useDarkMode}
+export { DarkModeProvider, useDarkMode };
