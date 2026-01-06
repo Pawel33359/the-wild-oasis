@@ -27,3 +27,5 @@ dist-ssr
 
 #custom
 plan.md
+# Local Netlify folder
+.netlify
